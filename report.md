@@ -100,7 +100,15 @@ The following average execution times (in seconds unless noted) were measured ov
 - **Hybrid** combines both models effectively, outperforming pure MPI or OpenMP for all sizes tested.
 - Overhead becomes less dominant as image size increases, highlighting better scalability in hybrid and CUDA models.
 
---- 
+This behavior is visualized in **Figure 1**, which illustrates the hybrid model’s execution time for each image resolution and configuration. Furthermore, **Figure 2** compares the speedup of all implementations on the 4000×4000 image relative to the OpenMP single-thread baseline.
+
+**Figure 1:** Hybrid MPI+OpenMP Execution Time Across Image Sizes  
+![Figure 1](figures/figure1_hybrid_execution_time.png)
+
+**Figure 2:** Speedup for 4000×4000 Image vs OpenMP (1 Thread)  
+![Figure 2](figures/figure2_speedup_comparison.png)
+
+---
 
 ## 7. Conclusion
 
@@ -115,9 +123,58 @@ We successfully implemented and evaluated multiple parallel strategies for Sobel
 
 ---
 
-## 9. References
+## 9. Parallel Efficiency
+
+To evaluate parallel performance, we calculate:
+
+- **Speedup (S)** = T₁ / Tₙ
+- **Efficiency (E)** = S / P
+
+Where T₁ is the execution time using a single thread/process (OpenMP 1-thread baseline), and P is the number of parallel units (threads/processes/GPU).
+
+### Speedup and Efficiency (4000×4000 image)
+
+| Method        | Config        | Time (s)   | Speedup | Efficiency |
+|---------------|---------------|------------|---------|------------|
+| OpenMP        | 1 Thread      | 0.855446   | 1.00    | 1.00       |
+| OpenMP        | 2 Threads     | 0.427324   | 2.00    | 1.00       |
+| OpenMP        | 4 Threads     | 0.220034   | 3.89    | 0.97       |
+| OpenMP        | 8 Threads     | 0.116072   | 7.37    | 0.92       |
+| MPI           | 2 Procs       | 0.376705   | 2.27    | 1.13       |
+| MPI           | 4 Procs       | 0.200855   | 4.26    | 1.07       |
+| MPI           | 8 Procs       | 0.109804   | 7.79    | 0.97       |
+| Hybrid        | MPI=1, OMP=1  | 0.193281   | 4.42    | 4.42       |
+| Hybrid        | MPI=2, OMP=2  | 0.085668   | 9.98    | 2.49       |
+| Hybrid        | MPI=4, OMP=4  | 0.013453   | 63.59   | 3.97       |
+| CUDA          | GPU           | 0.001564   | 546.63  |      -     |
+
+> Note: OpenMP (1-thread) was used as the baseline for all speedup calculations.
+
+These results confirm the efficiency of GPU acceleration for large-scale data and highlight the scalability of MPI and hybrid models in multicore environments.
+
+## 10. Algorithm Analysis
+
+The Sobel operator computes gradients using two 3×3 convolutions. This process is highly parallelizable due to the independence of each pixel's calculation.
+
+ - **Complexity**: O(n²) for an n×n image
+ - **Parallel Suitability**: Each output pixel depends on a 3×3 neighborhood; no data dependency across pixels
+ - **MPI Considerations**: Requires halo row exchanges to avoid incorrect border gradients
+
+## 11. Group Information
+
+ - **Group Members**: Abderlhman Elrawy, Trisha Reddy Kilaru
+ - **Submitted File**: `Elrawy_Kilaru_project.zip`
+
+## 12. Appendix A: Compilation & Execution
+
+All instructions are included in the project `README.md` file. Each module (MPI, OpenMP, CUDA, Hybrid) has its own build command and test script.
+
+See:
+ - `run_*_exp.sh` scripts for benchmarking
+
+## 13. References
 
 - OpenMP Specification: https://www.openmp.org
 - MPI Standard: https://www.mpi-forum.org
 - CUDA Toolkit Docs: https://docs.nvidia.com/cuda/
-- stb_image.h by Sean Barrett
+ - stb_image.h by Sean Barrett
