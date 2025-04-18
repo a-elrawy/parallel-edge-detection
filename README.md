@@ -47,7 +47,6 @@ parallel-edge-detection/
 ├── mpi/                 # MPI implementation
 ├── openmp/              # OpenMP implementation
 ├── output/              # Output images
-├── setup.sh             # Unified build script
 ├── README.md            # Documentation
 ```
 
