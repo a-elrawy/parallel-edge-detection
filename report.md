@@ -13,7 +13,35 @@ Edge detection is a fundamental task in image processing and computer vision. In
 
 ### 3.1 Algorithm Overview
 
+The Sobel operator is a widely used edge detection method in image processing and computer vision. It works by computing an approximation of the gradient of image intensity, highlighting regions with high spatial frequency that typically correspond to edges. The operator uses a pair of 3×3 convolution kernels to detect changes in horizontal (Gx) and vertical (Gy) directions. The gradient magnitude is then computed from these two components, providing a measure of edge strength at each pixel.
+
 The Sobel operator applies two 3x3 convolution kernels (Gx and Gy) to estimate the gradient magnitude at each pixel. The result is an edge map highlighting sharp changes in intensity.
+
+The Sobel operator uses two 3×3 kernels to approximate the image gradient:
+
+\[
+G_x =
+\begin{bmatrix}
+-1 & 0 & +1 \\
+-2 & 0 & +2 \\
+-1 & 0 & +1 \\
+\end{bmatrix},
+\quad
+G_y =
+\begin{bmatrix}
+-1 & -2 & -1 \\
+0 &  0 &  0 \\
++1 & +2 & +1 \\
+\end{bmatrix}
+\]
+
+For each pixel, the horizontal and vertical gradients \( G_x \) and \( G_y \) are computed via convolution. The final gradient magnitude is calculated as:
+
+\[
+G = \sqrt{G_x^2 + G_y^2}
+\]
+
+This value is used to determine edge intensity at each pixel.
 
 ### 3.2 Parallel Strategies
 
