@@ -39,6 +39,8 @@ void apply_sobel(unsigned char* input, unsigned char* output, int width, int hei
 }
 
 int main(int argc, char *argv[]) {
+    double program_start = omp_get_wtime();
+    
     if (argc < 2) {
         printf("Usage: %s <input_image_path>\n", argv[0]);
         return 1;
@@ -59,22 +61,24 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    for (int threads = 1; threads <= 8; threads *= 2) {
-        omp_set_num_threads(threads);
-        double total = 0.0;
-        for (int run = 0; run < 3; ++run) {
-            double start = omp_get_wtime();
-            apply_sobel(img, output, width, height);
-            double end = omp_get_wtime();
-            total += (end - start);
-        }
-        double average = total / 3.0;
-        printf("OpenMP Execution Time with %d threads (avg of 3 runs): %f seconds\n", threads, average);
+    double total = 0.0;
+    for (int run = 0; run < 3; ++run) {
+        double start = omp_get_wtime();
+        apply_sobel(img, output, width, height);
+        double end = omp_get_wtime();
+        total += (end - start);
     }
+    double average = total / 3.0;
+    printf("OpenMP Execution Time with (avg of 3 runs): %f seconds\n", average);
+
 
     stbi_write_jpg("../output/output_omp.jpg", width, height, 1, output, 100);
 
     stbi_image_free(img);
     free(output);
+    
+    double program_end = omp_get_wtime();
+    printf("OpenMP Total Program Time: %f seconds\n", (program_end - program_start) / 3.0);
+    
     return 0;
 }

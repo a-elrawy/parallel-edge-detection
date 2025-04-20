@@ -45,6 +45,11 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
+    cudaEvent_t full_start, full_stop;
+    cudaEventCreate(&full_start);
+    cudaEventCreate(&full_stop);
+    cudaEventRecord(full_start);
+
     int width, height, channels;
     unsigned char *img = stbi_load(argv[1], &width, &height, &channels, 1);
     if (!img) {
@@ -88,5 +93,12 @@ int main(int argc, char *argv[]) {
     free(h_output);
     cudaFree(d_input);
     cudaFree(d_output);
+
+    cudaEventRecord(full_stop);
+    cudaEventSynchronize(full_stop);
+    float full_elapsed;
+    cudaEventElapsedTime(&full_elapsed, full_start, full_stop);
+    printf("CUDA Total Program Time: %f ms\n", (full_elapsed) / 3.0f);
+
     return 0;
 }

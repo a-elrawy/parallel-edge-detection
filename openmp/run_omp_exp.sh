@@ -27,8 +27,13 @@ for size in "${IMAGE_SIZES[@]}"; do
         continue
     fi
 
-    ./omp_sobel $INPUT >> $LOG_FILE
-    echo "" >> $LOG_FILE
+    for threads in 1 2 4 8; do
+        export OMP_NUM_THREADS=$threads
+        echo "Running with $threads threads:" >> $LOG_FILE
+        ./omp_sobel $INPUT >> $LOG_FILE
+        echo "" >> $LOG_FILE
+    done
+
     echo "-----------------------------------" >> $LOG_FILE
 done
 

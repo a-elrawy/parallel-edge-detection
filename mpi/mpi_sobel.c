@@ -43,6 +43,7 @@ int main(int argc, char *argv[]) {
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
+    double overall_start_time = MPI_Wtime();
     
     int width, height, channels;
     unsigned char *img = NULL;
@@ -141,6 +142,10 @@ int main(int argc, char *argv[]) {
         printf("MPI Execution Time (avg of 3 runs): %f seconds\n", total_time / 3.0);
     }
      
+    double overall_end_time = MPI_Wtime();
+    if (rank == MASTER) {
+        printf("MPI Total Program Time: %f seconds\n", (overall_end_time - overall_start_time) / 3.0 );
+    }
     MPI_Finalize();
     return 0;
 }

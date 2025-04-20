@@ -15,7 +15,7 @@ fi
 
 # Test parameters
 IMAGE_SIZES=("512" "1024" "2048" "4000")
-PROCESS_COUNTS=(2 4 8)
+PROCESS_COUNTS=(1 2 4 8)
 
 for size in "${IMAGE_SIZES[@]}"; do
     INPUT="../data/input_${size}.jpg"

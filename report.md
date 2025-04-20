@@ -17,9 +17,7 @@ The Sobel operator is a widely used edge detection method in image processing an
 
 The Sobel operator applies two 3x3 convolution kernels (Gx and Gy) to estimate the gradient magnitude at each pixel. The result is an edge map highlighting sharp changes in intensity.
 
-The Sobel operator uses two 3×3 kernels to approximate the image gradient:
-
-\[
+$$
 G_x =
 \begin{bmatrix}
 -1 & 0 & +1 \\
@@ -33,13 +31,13 @@ G_y =
 0 &  0 &  0 \\
 +1 & +2 & +1 \\
 \end{bmatrix}
-\]
+$$
 
 For each pixel, the horizontal and vertical gradients \( G_x \) and \( G_y \) are computed via convolution. The final gradient magnitude is calculated as:
 
-\[
+$$
 G = \sqrt{G_x^2 + G_y^2}
-\]
+$$
 
 This value is used to determine edge intensity at each pixel.
 
@@ -76,39 +74,71 @@ We used `stb_image` for I/O, and benchmark scripts run each test 3 times and rep
 
 #### MPI
 
-| Image Size | 2 Procs | 4 Procs | 8 Procs |
-|------------|---------|---------|---------|
-| 512x512    | 0.006451 | 0.005480 | 0.003207 |
-| 1024x1024  | 0.025859 | 0.022054 | 0.012138 |
-| 2048x2048  | 0.100905 | 0.052973 | 0.032240 |
-| 4000x4000  | 0.376705 | 0.200855 | 0.109804 |
+| Image Size | Config     | Execution Time (s) | Total Time (s) |
+|------------|------------|--------------------|----------------|
+| 512x512    | 1 Process  | 0.012174           | 0.026008       |
+|            | 2 Processes| 0.006471           | 0.020507       |
+|            | 4 Processes| 0.005402           | 0.020067       |
+|            | 8 Processes| 0.003211           | 0.018324       |
+| 1024x1024  | 1 Process  | 0.048680           | 0.101924       |
+|            | 2 Processes| 0.025262           | 0.078910       |
+|            | 4 Processes| 0.021143           | 0.077750       |
+|            | 8 Processes| 0.012020           | 0.067273       |
+| 2048x2048  | 1 Process  | 0.194833           | 0.396318       |
+|            | 2 Processes| 0.099562           | 0.300289       |
+|            | 4 Processes| 0.053257           | 0.260993       |
+|            | 8 Processes| 0.030817           | 0.243945       |
+| 4000x4000  | 1 Process  | 0.734651           | 1.442408       |
+|            | 2 Processes| 0.379577           | 1.092674       |
+|            | 4 Processes| 0.203375           | 0.921975       |
+|            | 8 Processes| 0.111395           | 0.845566       |
 
 #### OpenMP
 
-| Image Size | 1 Thread | 2 Threads | 4 Threads | 8 Threads |
-|------------|-----------|------------|------------|------------|
-| 512x512    | 0.014083 | 0.007072 | 0.003715 | 0.002011 |
-| 1024x1024  | 0.056847 | 0.028169 | 0.014828 | 0.007654 |
-| 2048x2048  | 0.225075 | 0.112311 | 0.059197 | 0.030487 |
-| 4000x4000  | 0.855446 | 0.427324 | 0.220034 | 0.116072 |
+| Image Size | Config      | Execution Time (s) | Total Time (s) |
+|------------|-------------|--------------------|----------------|
+| 512x512    | 1 Thread    | 0.014701           | 0.029211       |
+|            | 2 Threads   | 0.007606           | 0.021766       |
+|            | 4 Threads   | 0.003905           | 0.018122       |
+|            | 8 Threads   | 0.002103           | 0.015754       |
+| 1024x1024  | 1 Thread    | 0.055895           | 0.105850       |
+|            | 2 Threads   | 0.028571           | 0.079856       |
+|            | 4 Threads   | 0.015199           | 0.066502       |
+|            | 8 Threads   | 0.007755           | 0.061705       |
+| 2048x2048  | 1 Thread    | 0.224288           | 0.413010       |
+|            | 2 Threads   | 0.121853           | 0.327364       |
+|            | 4 Threads   | 0.061820           | 0.268336       |
+|            | 8 Threads   | 0.031104           | 0.236352       |
+| 4000x4000  | 1 Thread    | 0.868364           | 1.573971       |
+|            | 2 Threads   | 0.451760           | 1.142580       |
+|            | 4 Threads   | 0.229483           | 0.940972       |
+|            | 8 Threads   | 0.115872           | 0.833919       |
 
 #### CUDA
 
-| Image Size | Time (ms) |
-|------------|-----------|
-| 512x512    | 0.045696  |
-| 1024x1024  | 0.112907  |
-| 2048x2048  | 0.417195  |
-| 4000x4000  | 1.564192  |
+| Image Size | Execution Time (ms) | Total Program Time (ms) |
+|------------|---------------------|--------------------------|
+| 512x512    | 0.040555            | 4.816682                |
+| 1024x1024  | 0.115424            | 17.480306               |
+| 2048x2048  | 0.418869            | 64.778061               |
+| 4000x4000  | 0.392021            | 230.974508              |
 
 #### Hybrid (MPI + OpenMP)
 
-| Image Size | MPI=1,OMP=1 | MPI=2,OMP=2 | MPI=4,OMP=4 |
-|------------|-------------|-------------|-------------|
-| 512x512    | 0.003175    | 0.001453    | 0.000411    |
-| 1024x1024  | 0.012709    | 0.005714    | 0.001345    |
-| 2048x2048  | 0.050676    | 0.022562    | 0.005265    |
-| 4000x4000  | 0.193281    | 0.085668    | 0.013453    |
+| Image Size | Config       | Execution Time (s) | Total Time (s) |
+|------------|--------------|--------------------|----------------|
+| 512x512    | MPI=1,OMP=1  | 0.003295           | 0.010760       |
+|            | MPI=2,OMP=2  | 0.001700           | 0.009184       |
+|            | MPI=4,OMP=4  | 0.001033           | 0.008260       |
+| 1024x1024  | MPI=1,OMP=1  | 0.013194           | 0.038703       |
+|            | MPI=2,OMP=2  | 0.006813           | 0.033307       |
+|            | MPI=4,OMP=4  | 0.004452           | 0.031632       |
+| 2048x2048  | MPI=1,OMP=1  | 0.052099           | 0.145904       |
+|            | MPI=2,OMP=2  | 0.025421           | 0.122941       |
+|            | MPI=4,OMP=4  | 0.011220           | 0.110006       |
+| 4000x4000  | MPI=1,OMP=1  | 0.201632           | 0.526048       |
+|            | MPI=2,OMP=2  | 0.094653           | 0.428769       |
+|            | MPI=4,OMP=4  | 0.024128           | 0.359698       |
 
 ### 6.2 Observations
  
@@ -120,29 +150,48 @@ We used `stb_image` for I/O, and benchmark scripts run each test 3 times and rep
  
  This behavior is visualized in **Figure 1**, which illustrates the hybrid model’s execution time for each image resolution and configuration. Furthermore, **Figure 2** compares the speedup of all implementations on the 4000×4000 image relative to the OpenMP single-thread baseline.
  
- **Figure 1:** Hybrid MPI+OpenMP Execution Time Across Image Sizes  
- ![Figure 1](figures/figure1_hybrid_execution_time.png)
+ **Figure 1:** Hybrid MPI+OpenMP Execution Time (Kernel Only) Across Image Sizes  
+ ![Figure 1](figures/hybrid_exec_time_only.png)
  
- **Figure 2:** Speedup for 4000×4000 Image vs OpenMP (1 Thread)  
- ![Figure 2](figures/figure2_speedup_comparison.png)
+ **Figure 2:** Speedup for 4000×4000 Image Based on Total Program Time
+ ![Figure 2](figures/speedup_total_program_time.png)
 
 ## 7. Parallel Efficiency
 
 ### Speedup and Efficiency (4000×4000 image)
 
+#### Based on Execution Time
+
 | Method        | Config        | Time (s)   | Speedup | Efficiency |
 |---------------|---------------|------------|---------|------------|
-| OpenMP        | 1 Thread      | 0.855446   | 1.00    | 1.00       |
-| OpenMP        | 2 Threads     | 0.427324   | 2.00    | 1.00       |
-| OpenMP        | 4 Threads     | 0.220034   | 3.89    | 0.97       |
-| OpenMP        | 8 Threads     | 0.116072   | 7.37    | 0.92       |
-| MPI           | 2 Procs       | 0.376705   | 2.27    | 1.13       |
-| MPI           | 4 Procs       | 0.200855   | 4.26    | 1.07       |
-| MPI           | 8 Procs       | 0.109804   | 7.79    | 0.97       |
-| Hybrid        | MPI=1, OMP=1  | 0.193281   | 4.42    | 4.42       |
-| Hybrid        | MPI=2, OMP=2  | 0.085668   | 9.98    | 2.49       |
-| Hybrid        | MPI=4, OMP=4  | 0.013453   | 63.59   | 3.97       |
-| CUDA          | GPU           | 0.001564   | 546.63  |      -     |
+| OpenMP        | 1 Thread      | 0.868364   | 1.00    | 1.00       |
+| OpenMP        | 2 Threads     | 0.451760   | 1.92    | 0.96       |
+| OpenMP        | 4 Threads     | 0.229483   | 3.78    | 0.95       |
+| OpenMP        | 8 Threads     | 0.115872   | 7.49    | 0.94       |
+| MPI           | 2 Procs       | 0.379577   | 2.29    | 1.14       |
+| MPI           | 4 Procs       | 0.203375   | 4.27    | 1.07       |
+| MPI           | 8 Procs       | 0.111395   | 7.79    | 0.97       |
+| Hybrid        | MPI=2, OMP=2  | 0.094653   | 9.17    | 2.29*      |
+| Hybrid        | MPI=4, OMP=4  | 0.024128   | 35.98   | 2.25       |
+| CUDA          | GPU           | 0.000392   | 2214.40 | -          |
+
+> \* Efficiency appears >1 because execution time measurements exclude some initialization overhead. See total program time for full efficiency metrics.
+
+#### Based on Total Program Time (divided by the 3 runs)
+
+| Method        | Config        | Time (s)   | Speedup | Efficiency |
+|---------------|---------------|------------|---------|------------|
+| OpenMP        | 1 Thread      | 1.573971   | 1.00    | 1.00       |
+| OpenMP        | 2 Threads     | 1.142580   | 1.38    | 0.69       |
+| OpenMP        | 4 Threads     | 0.940972   | 1.67    | 0.42       |
+| OpenMP        | 8 Threads     | 0.833919   | 1.89    | 0.24       |
+| MPI           | 2 Procs       | 1.092674   | 1.44    | 0.72       |
+| MPI           | 4 Procs       | 0.921975   | 1.71    | 0.43       |
+| MPI           | 8 Procs       | 0.845566   | 1.86    | 0.23       |
+| Hybrid        | MPI=2, OMP=2  | 0.428769   | 3.67    | 0.92       |
+| Hybrid        | MPI=4, OMP=4  | 0.359698   | 4.38    | 0.27       |
+| CUDA          | GPU           | 0.230975   | 6.81    | -          |
+
 
 ## 8. Conclusion
 

@@ -23,29 +23,7 @@ for IMG in "${images[@]}"; do
     for nt in "${omp_threads[@]}"; do
       export OMP_NUM_THREADS=$nt
       echo "MPI=$np, OMP=$nt" >> "$OUTPUT_LOG"
-      total=0
-      count=0
-
-      for i in {1..3}; do
-        output=$(mpirun --mca btl self,vader -np "$np" ./hybrid_sobel "$IMG")
-        result=$(echo "$output" | grep "Hybrid MPI+OpenMP Time" | awk '{print $(NF-1)}')
-
-        if [[ $result =~ ^[0-9.]+$ ]]; then
-          echo "Run $i: $result s" >> "$OUTPUT_LOG"
-          total=$(echo "$total + $result" | bc -l)
-          ((count++))
-        else
-          echo "Run $i: FAILED (no valid timing output)" >> "$OUTPUT_LOG"
-        fi
-      done
-
-      if [[ $count -gt 0 ]]; then
-        avg=$(echo "$total / $count" | bc -l)
-        echo "Average Time: $avg seconds" >> "$OUTPUT_LOG"
-      else
-        echo "Average Time: N/A (all runs failed)" >> "$OUTPUT_LOG"
-      fi
-
+      mpirun --mca btl self,vader -np "$np" ./hybrid_sobel "$IMG" >> "$OUTPUT_LOG"
       echo "----------------------------------------" >> "$OUTPUT_LOG"
     done
   done
